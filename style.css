@@ -1,0 +1,301 @@
+/* --- Global Setup --- */
+:root { 
+    --navy-dark: #0f172a; 
+    --navy-med: #334155; 
+    --blue: #2563eb;
+    --green: #059669; 
+    --red: #dc2626; 
+    --light: #f1f5f9; 
+    --border: #cbd5e1;
+    --card-header: #e2e8f0; 
+}
+
+* { box-sizing: border-box; }
+
+body { 
+    margin: 0; 
+    font-family: 'Inter', 'Kanit', sans-serif; 
+    display: flex; 
+    background: var(--light); 
+    height: 100vh; 
+    color: #1e293b; 
+    overflow: hidden; 
+}
+
+/* --- ส่วนที่ 1: Navigation Sidebar (กว้างขึ้น) --- */
+.nav-sidebar { 
+    width: 150px;
+    background: rgba(51, 65, 85, 0.3);
+    backdrop-filter: blur(100px); /* เพิ่มความ Glass */
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 30px 0; 
+    flex-shrink: 0; 
+}
+
+.nav-sidebar a { text-decoration: none; color: #1e293b; width: 100%; margin-bottom: 15px; }
+
+.logo-box { 
+    width: 60px; height: 60px; 
+    background: var(--blue); 
+    border-radius: 12px; 
+    margin-bottom: 40px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: bold; 
+    font-size: 24px; 
+    color: white; 
+}
+
+.nav-item { 
+    width: 100%; padding: 15px 0; 
+    text-align: center; cursor: pointer; 
+    display: flex; flex-direction: column; 
+    align-items: center; font-size: 14px;
+    transition: 0.2s; 
+}
+
+.nav-item:hover {
+    background: rgba(212, 175, 55, 0.5);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+}
+
+/* --- ส่วนที่ 2: Sidebar Input (ขยายกว้างขึ้น) --- */
+.sidebar-input { 
+    width: 550px;
+    background: #fff; 
+    border-right: 1px solid var(--border); 
+    display: flex; 
+    flex-direction: column; 
+    flex-shrink: 0; 
+}
+
+.card-padding { padding: 25px; }
+
+.sidebar-input .draft-section {
+    flex: 1;
+    padding: 20px;
+    background: #fafafa;
+    overflow-y: auto;
+    border-top: 1px solid var(--border);
+}
+
+/* --- ส่วนที่ 3: Main Content --- */
+.main-content { 
+    flex: 1; 
+    padding: 25px; 
+    overflow-y: auto; 
+}
+
+#billContainer {
+    display: block;
+}
+
+/* --- Inputs & Forms --- */
+.input-grid { 
+    display: grid; 
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 12px; 
+    margin-top: 5px; 
+}
+
+label { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; display: block; }
+
+input { 
+    width: 100%; padding: 12px; 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+    font-size: 16px;
+}
+
+input:focus { 
+    border-color: var(--blue); 
+    outline: none; 
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); 
+}
+
+input:disabled { background: #f1f5f9 !important; border-color: #e2e8f0; }
+
+.btn-submit { 
+    background: #8b5cf6; 
+    color: white; 
+    border: none; 
+    padding: 16px; 
+    width: 100%; 
+    border-radius: 10px; 
+    font-size: 16px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    margin-top: 15px; 
+    transition: all 0.25s ease; /* เพิ่ม smooth */
+}
+
+/* Hover: ไม่เปลี่ยนสี แต่ลอย + มีมิติ */
+.btn-submit:hover { 
+    background: #8b5cf6; /* คงสีเดิม */
+    transform: translateY(-1px); /* ลอยขึ้น */
+    box-shadow: 0 8px 20px rgba(0,0,1,2.2); /* เงา */
+}
+
+/* ตอนกด (เพิ่มความสมจริง) */
+.btn-submit:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+/* --- Index Card --- */
+.bill-card { 
+    background: #ffffff; 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+    height: fit-content;
+}
+
+.bill-header-index { 
+    background: var(--card-header) !important; 
+    color: #1e293b; 
+    padding: 12px 15px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    cursor: pointer; 
+    font-weight: 700; 
+    border-bottom: 1px solid var(--border); 
+}
+
+.btn-del { 
+    background: var(--red); 
+    color: white; border: none; 
+    border-radius: 6px; 
+    padding: 5px 12px; 
+    cursor: pointer; 
+    font-size: 12px; 
+}
+
+/* --- Money Report --- */
+#moneyList { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 15px; 
+}
+
+.money-box { 
+    background: white; 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+}
+
+.money-header { 
+    padding: 15px; 
+    display: flex; 
+    justify-content: space-between; 
+}
+
+.money-detail { display: none; }
+.money-detail.show { display: block; }
+
+/* --- Table --- */
+table { width: 100%; border-collapse: collapse; }
+th { padding: 10px; }
+td { padding: 8px; }
+
+.tooltip { 
+    position: relative; 
+    display: inline-block; 
+    width: 100%;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #334155;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 6px 8px;
+    position: absolute;
+    z-index: 999;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: 0.3s;
+    font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* --- Utilities --- */
+.badge { background: #e2e8f0; padding: 2px 8px; border-radius: 4px; }
+
+/* ===================================================== */
+/* ✅ NEW: LOGO ANIMATION (เพิ่มใหม่ ไม่กระทบของเดิม) */
+/* ===================================================== */
+
+.logo-animate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.logo-animate .rabbit {
+    font-size: 34px;
+    animation: bounce 1.5s infinite;
+}
+
+.logo-animate .text {
+    font-size: 18px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #8c6b1f, #d4af37, #6e5215);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-top: 5px;
+    
+    /* ✨ เพิ่มความสวย */
+    letter-spacing: 1.0px; /* spacing นิดเดียว */
+    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.5); /* glow ทองเบา ๆ */
+    position: relative;
+}
+
+/* animation */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+/* เพิ่มต่อท้ายไฟล์ style.css */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+    padding: 12px 8px;
+}
+
+td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 15px;
+}
+
+.bill-item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
