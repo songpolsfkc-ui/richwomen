@@ -22,11 +22,11 @@ body {
     overflow: hidden; 
 }
 
-/* --- ส่วนที่ 1: Navigation Sidebar (กว้างขึ้น) --- */
+/* --- ส่วนที่ 1: Navigation Sidebar --- */
 .nav-sidebar { 
     width: 150px;
     background: rgba(51, 65, 85, 0.3);
-    backdrop-filter: blur(100px); /* เพิ่มความ Glass */
+    backdrop-filter: blur(100px); 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
@@ -53,7 +53,7 @@ body {
     width: 100%; padding: 15px 0; 
     text-align: center; cursor: pointer; 
     display: flex; flex-direction: column; 
-    align-items: center; font-size: 14px;
+    align-items: center; font-size: 15px;
     transition: 0.2s; 
 }
 
@@ -63,7 +63,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* --- ส่วนที่ 2: Sidebar Input (ขยายกว้างขึ้น) --- */
+/* --- ส่วนที่ 2: Sidebar Input --- */
 .sidebar-input { 
     width: 550px;
     background: #fff; 
@@ -130,20 +130,17 @@ input:disabled { background: #f1f5f9 !important; border-color: #e2e8f0; }
     font-weight: bold; 
     cursor: pointer; 
     margin-top: 15px; 
-    transition: all 0.25s ease; /* เพิ่ม smooth */
+    transition: all 0.25s ease; 
 }
 
-/* Hover: ไม่เปลี่ยนสี แต่ลอย + มีมิติ */
 .btn-submit:hover { 
-    background: #8b5cf6; /* คงสีเดิม */
-    transform: translateY(-1px); /* ลอยขึ้น */
-    box-shadow: 0 8px 20px rgba(0,0,1,2.2); /* เงา */
+    background: #8b5cf6; 
+    transform: translateY(-1px); 
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2); 
 }
 
-/* ตอนกด (เพิ่มความสมจริง) */
 .btn-submit:active {
     transform: translateY(1px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 
 /* --- Index Card --- */
@@ -153,7 +150,6 @@ input:disabled { background: #f1f5f9 !important; border-color: #e2e8f0; }
     border-radius: 12px; 
     overflow: hidden; 
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
-    height: fit-content;
 }
 
 .bill-header-index { 
@@ -165,7 +161,6 @@ input:disabled { background: #f1f5f9 !important; border-color: #e2e8f0; }
     align-items: center; 
     cursor: pointer; 
     font-weight: 700; 
-    border-bottom: 1px solid var(--border); 
 }
 
 .btn-del { 
@@ -177,10 +172,10 @@ input:disabled { background: #f1f5f9 !important; border-color: #e2e8f0; }
     font-size: 12px; 
 }
 
-/* --- Money Report --- */
+/* --- Money Report & Discounts --- */
 #moneyList { 
     display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
     gap: 15px; 
 }
 
@@ -190,55 +185,49 @@ input:disabled { background: #f1f5f9 !important; border-color: #e2e8f0; }
     border-radius: 12px; 
 }
 
-.money-header { 
-    padding: 15px; 
-    display: flex; 
-    justify-content: space-between; 
+/* ปรับปรุงส่วนนี้ใน style.css */
+.discount-group {
+    display: flex;
+    flex-wrap: wrap; /* ให้ปุ่มขึ้นบรรทัดใหม่ได้ถ้าหน้าจอแคบ */
+    gap: 8px;       /* ระยะห่างระหว่างปุ่ม */
+    width: 100%;    /* ให้กลุ่มปุ่มกว้างเต็ม Card */
 }
 
-.money-detail { display: none; }
-.money-detail.show { display: block; }
-
-/* --- Table --- */
-table { width: 100%; border-collapse: collapse; }
-th { padding: 10px; }
-td { padding: 8px; }
-
-.tooltip { 
-    position: relative; 
-    display: inline-block; 
-    width: 100%;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 160px;
-    background-color: #334155;
-    color: #fff;
-    text-align: center;
-    border-radius: 8px;
-    padding: 6px 8px;
-    position: absolute;
-    z-index: 999;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: 0.3s;
+.discount-btn {
+    flex: 1;         /* สำคัญ: ทำให้ปุ่มยืดออกไปเติมที่ว่างให้เต็ม */
+    min-width: 45px; /* ขนาดขั้นต่ำของปุ่ม */
+    padding: 8px 5px; 
     font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
 }
 
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
+.discount-btn.active {
+    background: var(--blue); /* หรือโค้ดสีที่คุณใช้ */
+    color: white;
+    border-color: var(--blue);
+}
+.discount-btn:hover:not(.active) {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
 }
 
-/* --- Utilities --- */
-.badge { background: #e2e8f0; padding: 2px 8px; border-radius: 4px; }
+/* เพิ่ม Container สำหรับกลุ่มปุ่ม */
+.discount-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
 
-/* ===================================================== */
-/* ✅ NEW: LOGO ANIMATION (เพิ่มใหม่ ไม่กระทบของเดิม) */
-/* ===================================================== */
+/* --- Table & Others --- */
+table { width: 100%; border-collapse: collapse; }
+th { padding: 10px; text-align: left; background: #f8fafc; color: #64748b; border-bottom: 2px solid var(--border); }
+td { padding: 12px 8px; border-bottom: 1px solid #f1f5f9; }
 
 .logo-animate {
     display: flex;
@@ -259,43 +248,54 @@ td { padding: 8px; }
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-top: 5px;
-    
-    /* ✨ เพิ่มความสวย */
-    letter-spacing: 1.0px; /* spacing นิดเดียว */
-    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.5); /* glow ทองเบา ๆ */
-    position: relative;
+    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.5);
 }
 
-/* animation */
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
 }
-/* เพิ่มต่อท้ายไฟล์ style.css */
-table {
-    width: 100%;
-    border-collapse: collapse;
+
+.tooltip { position: relative; width: 100%; }
+.tooltip .tooltiptext {
+    visibility: hidden; width: 160px; background-color: #334155; color: #fff;
+    text-align: center; border-radius: 8px; padding: 6px 8px;
+    position: absolute; z-index: 999; bottom: 125%; left: 50%;
+    transform: translateX(-50%); opacity: 0; transition: 0.3s; font-size: 12px;
+}
+.tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+.badge { background: #e2e8f0; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+/* --- Print Styles --- */
+@media print {
+    body * { visibility: hidden; }
+    #printSection, #printSection * { visibility: visible; }
+    #printSection {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        color: black !important;
+        background: white !important;
+    }
+    .nav-sidebar, .main-content h2, .main-content p, .discount-group, .money-header button, .money-detail, .money-box {
+        display: none !important;
+    }
+    @page { margin: 1cm; }
 }
 
-th {
-    background: #f8fafc;
-    color: #64748b;
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--border);
-    padding: 12px 8px;
+.print-btn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
 }
 
-td {
-    padding: 12px 8px;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 15px;
-}
-
-.bill-item-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 12px;
-    border-bottom: 1px solid #f1f5f9;
+#printSection {
+    font-family: 'Sarabun', 'Kanit', sans-serif;
+    line-height: 1.6;
 }
