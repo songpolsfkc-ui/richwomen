@@ -174,25 +174,46 @@ function deleteBill(id) {
     renderFinal();
 }
 
-// --- 2. หน้า Check: รายงานสะสม ---
+// --- 2. หน้า Check: รายงานสะสม (เวอร์ชันแก้ไขพร้อมระบบ Filter) ---
 function renderReport() {
     const body = document.getElementById('reportBody');
     if(!body) return;
+
+    // ดึงค่าจากตัวกรอง
+    const filterSelect = document.getElementById('typeFilter');
+    const filterValue = filterSelect ? filterSelect.value : 'all';
+
     let summary = {}; 
     grandReportData.forEach(item => {
+        // ตรวจสอบเงื่อนไขการกรอง
+        if (filterValue !== 'all' && item.type !== filterValue) {
+            return; // ข้ามรายการที่ไม่ตรงกับ Filter
+        }
+
         let key = item.n + "_" + item.type;
         if(!summary[key]) summary[key] = { n: item.n, type: item.type, amt: 0 };
         summary[key].amt += item.amt;
     });
+
     let summaryArray = Object.values(summary).sort((a,b) => a.n.localeCompare(b.n));
     let html = '';
+    
     summaryArray.forEach(r => {
         let limit = limits[r.type] || 0;
         let diff = r.amt - limit;
         let isOver = limit > 0 && diff > 0;
-        html += `<tr><td style="text-align: left; padding-left:20px;"><strong>${r.n}</strong></td><td style="text-align: center;"><span class="badge">${r.type}</span></td><td style="text-align: right; font-weight:bold;">${r.amt.toLocaleString()}</td><td style="text-align: right;">${limit > 0 ? limit.toLocaleString() : '-'}</td><td style="text-align: right; color:var(--red); font-weight:800;">${isOver ? diff.toLocaleString() : '-'}</td></tr>`;
+        
+        html += `
+            <tr>
+                <td style="text-align: left; padding-left:20px;"><strong>${r.n}</strong></td>
+                <td style="text-align: center;"><span class="badge">${r.type}</span></td>
+                <td style="text-align: right; font-weight:bold;">${r.amt.toLocaleString()}</td>
+                <td style="text-align: right;">${limit > 0 ? limit.toLocaleString() : '-'}</td>
+                <td style="text-align: right; color:var(--red); font-weight:800;">${isOver ? diff.toLocaleString() : '-'}</td>
+            </tr>`;
     });
-    body.innerHTML = html || '<tr><td colspan="5" style="text-align:center;">ไม่มีข้อมูล</td></tr>';
+
+    body.innerHTML = html || '<tr><td colspan="5" style="text-align:center;">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>';
 }
 
 // --- 3. หน้า Money: สรุปยอดรายคน + พิมพ์ PDF ---
