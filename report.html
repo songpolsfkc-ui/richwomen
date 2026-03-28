@@ -19,12 +19,24 @@
     <div class="main-content">
         <div class="card-padding" style="background:white; border-radius:15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="margin:0;">📊 Check (ยอดสะสมแยกเลข)</h2>
-                <div>
-                    <button onclick="exportReportToExcel()" style="background:#1d6f42; color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer;">📥 Excel Report</button>
-                    <button onclick="clearGrandReport()" style="background:var(--red); color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; margin-left:10px;">ล้างงวดนี้</button>
-                </div>
-            </div>
+    <h2 style="margin:0;">📊 Check (ยอดสะสมแยกเลข)</h2>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <label for="typeFilter" style="font-weight: bold;">กรองประเภท:</label>
+        <select id="typeFilter" onchange="renderReport()" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd; cursor:pointer;">
+            <option value="all">ทั้งหมด</option>
+            <option value="2ตัวบน">2ตัวบน</option>
+            <option value="2ตัวล่าง">2ตัวล่าง</option>
+            <option value="3ตัวบน">3ตัวบน</option>
+            <option value="3ตัวโต๊ด">3ตัวโต๊ด</option>
+            <option value="3ตัวล่าง">3ตัวล่าง</option>
+            <option value="วิ่งบน">วิ่งบน</option>
+            <option value="วิ่งล่าง">วิ่งล่าง</option>
+        </select>
+        
+        <button onclick="exportReportToExcel()" style="background:#1d6f42; color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer;">📥 Excel Report</button>
+        <button onclick="clearGrandReport()" style="background:var(--red); color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer;">ล้างงวดนี้</button>
+    </div>
+</div>
             <table style="table-layout: fixed; width: 100%;">
     <thead>
         <tr>
