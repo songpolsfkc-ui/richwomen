@@ -179,41 +179,51 @@ function renderReport() {
     const body = document.getElementById('reportBody');
     if(!body) return;
 
-    // ดึงค่าจากตัวกรอง
-    const filterSelect = document.getElementById('typeFilter');
-    const filterValue = filterSelect ? filterSelect.value : 'all';
+    const filterValue = document.getElementById('typeFilter')?.value || 'all';
 
     let summary = {}; 
     grandReportData.forEach(item => {
-        // ตรวจสอบเงื่อนไขการกรอง
-        if (filterValue !== 'all' && item.type !== filterValue) {
-            return; // ข้ามรายการที่ไม่ตรงกับ Filter
-        }
+        if (filterValue !== 'all' && item.type !== filterValue) return;
 
         let key = item.n + "_" + item.type;
         if(!summary[key]) summary[key] = { n: item.n, type: item.type, amt: 0 };
         summary[key].amt += item.amt;
     });
 
-    let summaryArray = Object.values(summary).sort((a,b) => a.n.localeCompare(b.n));
+    // เรียงลำดับ: ประเภทเดียวกันอยู่ด้วยกัน และเลขเรียงจากน้อยไปมาก
+    let summaryArray = Object.values(summary).sort((a, b) => {
+        if (a.type !== b.type) return a.type.localeCompare(b.type, 'th');
+        return a.n.localeCompare(b.n);
+    });
+
     let html = '';
-    
     summaryArray.forEach(r => {
         let limit = limits[r.type] || 0;
         let diff = r.amt - limit;
         let isOver = limit > 0 && diff > 0;
         
+        // ใช้ width ชุดเดียวกับหัวตาราง (15% | 20% | 15% | 25% | 25%)
         html += `
-            <tr>
-                <td style="text-align: left; padding-left:20px;"><strong>${r.n}</strong></td>
-                <td style="text-align: center;"><span class="badge">${r.type}</span></td>
-                <td style="text-align: right; font-weight:bold;">${r.amt.toLocaleString()}</td>
-                <td style="text-align: right;">${limit > 0 ? limit.toLocaleString() : '-'}</td>
-                <td style="text-align: right; color:var(--red); font-weight:800;">${isOver ? diff.toLocaleString() : '-'}</td>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="width: 20%; text-align: center; padding: 12px 0;">
+                    <span class="badge" style="font-size: 11px;">${r.type}</span>
+                </td>
+                <td style="width: 20%; text-align: center; color: #64748b;">
+                    ${limit > 0 ? limit.toLocaleString() : '-'}
+                </td>
+                <td style="width: 20%; text-align: center;">
+                    <strong style="font-size: 16px; color: #1e293b;">${r.n}</strong>
+                </td>
+                <td style="width: 20%; text-align: center; font-weight: 700; color: var(--blue);">
+                    ${r.amt.toLocaleString()}
+                </td>
+                <td style="width: 20%; text-align: center; padding-right: 20px; color: var(--red); font-weight: 800;">
+                    ${isOver ? diff.toLocaleString() : '-'}
+                </td>
             </tr>`;
     });
 
-    body.innerHTML = html || '<tr><td colspan="5" style="text-align:center;">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>';
+    body.innerHTML = html || '<tr><td colspan="5" style="text-align:center; padding:20px;">ไม่พบข้อมูล</td></tr>';
 }
 
 // --- 3. หน้า Money: สรุปยอดรายคน + พิมพ์ PDF ---
