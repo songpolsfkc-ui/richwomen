@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Rich Women - Input</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="nav-sidebar">
+<div class="logo-animate">
+    <div class="rabbit">🪙</div>
+    <div class="text">Rich Women</div>
+</div>
+ <a href="index.html"><div class="nav-item">🏠<br>Key Number</div></a>
+        <a href="report.html"><div class="nav-item">📊<br>Limit Check</div></a>
+        <a href="money.html"><div class="nav-item">💰<br>Money Report</div></a>
+	<a href="wincheck.html"><div class="nav-item">🏆<br>Win Check</div></a>
+        <a href="settings.html"><div class="nav-item">⚙️<br>Limit Setting</div></a>
+    </div>
+
+    <div class="sidebar-input">
+        <div class="card-padding">
+            <h3 style="color:var(--blue); margin:0 0 15px 0;">⚡ คีย์เลขด่วน</h3>
+            <div style="margin-bottom: 12px;">
+                <label>ชื่อลูกค้า</label>
+                <input id="sessionName" type="text" placeholder="ระบุชื่อลูกค้า">
+            </div>
+            <div class="input-grid">
+                <div class="tooltip">
+                    <label>เลข</label>
+                    <input id="num" type="text" placeholder="123*" autofocus>
+                    <span class="tooltiptext">*Tip - ใส่ * ต่อท้ายเลขเพื่อกลับเลขทั้งชุด (เช่น 123*) </span>
+                </div>
+                <div><label>บน</label><input id="top" type="number"></div>
+                <div><label>โต๊ด</label><input id="tod" type="number"></div>
+                <div><label>ล่าง</label><input id="down" type="number"></div>
+            </div>
+            <button class="btn-submit" onclick="addToDraft()">เพิ่มเข้าตารางพัก</button>
+        </div>
+        
+        <div style="padding:15px; flex:1; overflow-y:auto; background:#fcfcfc;">
+            <h4 style="margin:0 0 10px 0;">ตารางพัก</h4>
+            <table>
+                <thead><tr><th>เลข</th><th>บน</th><th>โต๊ด</th><th>ล่าง</th><th></th></tr></thead>
+                <tbody id="draftBody"></tbody>
+            </table>
+            <button class="btn-submit" id="submitBtn" onclick="submitToFinal()" style="display:none; background:var(--green);">ยืนยันส่งโพยลูกค้ารายนี้ →</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">📝 รายการโพยล่าสุด</h2>
+            <div style="text-align:right">
+                <div style="font-size: 26px; font-weight:800; color:var(--blue)">฿ <span id="totalAmt">0</span></div>
+                <button onclick="exportToExcel()" style="background:#1d6f42; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">📥 Excel โพยรวม</button>
+            </div>
+        </div>
+        <div id="billContainer"></div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        initKeypadLogic();
+        renderFinal();
+    </script>
+</body>
+</html>
