@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Win Checker - Rich Women</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="logo-animate">
+            <div class="rabbit">🪙</div>
+            <div class="text">Rich Women</div>
+        </div>
+        <a href="index.html"><div class="nav-item">🏠<br>Key Number</div></a>
+        <a href="report.html"><div class="nav-item">📊<br>Limit Check</div></a>
+        <a href="money.html"><div class="nav-item">💰<br>Money Report</div></a>
+        <a href="win.html"><div class="nav-item">🏆<br>Win Check</div></a> 
+	<a href="settings.html"><div class="nav-item">⚙️<br>Limit Setting</div></a>
+    </div>
+
+    <div class="main-content">
+        <div class="card-padding" style="background:white; border-radius:15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h2 style="margin-top:0;">🏆 ตรวจสอบรางวัล</h2>
+            <div class="input-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                <div>
+                    <label>รางวัลที่ 1</label>
+                    <input id="win1" type="text" placeholder="เช่น 123456" maxlength="6">
+                </div>
+                <div>
+                    <label>2 ตัวล่าง</label>
+                    <input id="winDown2" type="text" placeholder="เช่น 78" maxlength="2">
+                </div>
+                <div>
+                    <label>3 ตัวล่าง (1)</label>
+                    <input id="winDown3_1" type="text" placeholder="3 ตัวล่าง" maxlength="3">
+                </div>
+                <div>
+                    <label>3 ตัวล่าง (2)</label>
+                    <input id="winDown3_2" type="text" placeholder="3 ตัวล่าง" maxlength="3">
+                </div>
+            </div>
+            <button onclick="checkWinners()" class="btn-submit" style="background:var(--blue); margin-top:20px;">🔍 ตรวจสอบและบันทึกผล</button>
+        </div>
+<div id="winnerDisplay" style="margin-bottom: 20px;">
+    </div>
+
+<div id="winnerResult">
+    </div>
+
+        <div id="winnerResult">
+            </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // โหลดผลรางวัลที่เคยบันทึกไว้ (ถ้ามี)
+        window.onload = () => {
+            const savedWin = JSON.parse(localStorage.getItem('lotto_win_results'));
+            if(savedWin) {
+                document.getElementById('win1').value = savedWin.win1 || '';
+                document.getElementById('winDown2').value = savedWin.winDown2 || '';
+                document.getElementById('winDown3_1').value = savedWin.winDown3_1 || '';
+                document.getElementById('winDown3_2').value = savedWin.winDown3_2 || '';
+                renderWinners(); 
+            }
+        };
+    </script>
+</body>
+</html>
