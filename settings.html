@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8"><title>Limit Setting</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="nav-sidebar">
+<div class="logo-animate">
+    <div class="rabbit">🪙</div>
+    <div class="text">Rich Women</div>
+</div>
+        <a href="index.html"><div class="nav-item">🏠<br>Key Number</div></a>
+        <a href="report.html"><div class="nav-item">📊<br>Limit Check</div></a>
+        <a href="money.html"><div class="nav-item">💰<br>Money Report</div></a>
+        <a href="win.html"><div class="nav-item">🏆<br>Win Check</div></a> 
+	<a href="settings.html"><div class="nav-item">⚙️<br>Limit Setting</div></a>
+    </div>
+
+    <div class="main-content">
+        <div class="card-padding" style="background:white; border-radius:15px; max-width:600px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="margin:0;">⚙️ Limit Setting</h2>
+                <button onclick="clearLimits()" style="background:var(--red); color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold;">ล้างเพดานทั้งหมด</button>
+            </div>
+            
+            <div id="settingsContainer"></div>
+            
+            <button onclick="saveSettings()" class="btn-submit" style="background:var(--blue);">บันทึกเพดาน</button>
+            <p style="color:#64748b; font-size:12px; margin-top:10px; text-align:center;">*กด Enter เพื่อเลื่อนไปช่องถัดไป หรือบันทึก</p>
+        </div>
+    </div>
+    <script src="app.js"></script>
+    <script>renderSettings();</script>
+</body>
+</html>
