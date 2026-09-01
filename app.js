@@ -200,7 +200,64 @@ function submitToFinal() {
     document.getElementById('down').value = '';
 }
 
+// สีแยกตามประเภทเลข สำหรับ "รายการโพยล่าสุด"
+function getTypeBadgeStyle(type) {
+    const styles = {
+        "2ตัวบน":    { bg: "#fee2e2", color: "#b91c1c", border: "#fecaca" },
+        "2ตัวล่าง":  { bg: "#dbeafe", color: "#1d4ed8", border: "#bfdbfe" },
+        "3ตัวบน":    { bg: "#dcfce7", color: "#15803d", border: "#bbf7d0" },
+        "3ตัวโต๊ด":  { bg: "#fef3c7", color: "#b45309", border: "#fde68a" },
+        "3ตัวล่าง":  { bg: "#f3e8ff", color: "#7e22ce", border: "#e9d5ff" },
+        "วิ่งบน":    { bg: "#ccfbf1", color: "#0f766e", border: "#99f6e4" },
+        "วิ่งล่าง":  { bg: "#e5e7eb", color: "#374151", border: "#d1d5db" }
+    };
+    return styles[type] || { bg: "#f1f5f9", color: "#475569", border: "#e2e8f0" };
+}
+
 // --- 1. ปรับปรุงการแสดงผล (ส่ง timestamp แทน index) ---
+
+function getLatestPosition(type) {
+    if (type.includes('โต๊ด')) return 'tod';
+    if (type.endsWith('บน')) return 'top';
+    if (type.endsWith('ล่าง')) return 'down';
+    return null;
+}
+
+function getLatestColumnStyle(position) {
+    const styles = {
+        top:  { bg: '#fff1f2', color: '#b91c1c', border: '#fecdd3', label: 'บน' },
+        tod:  { bg: '#fffbeb', color: '#b45309', border: '#fde68a', label: 'โต๊ด' },
+        down: { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe', label: 'ล่าง' }
+    };
+    return styles[position] || { bg: '#f8fafc', color: '#475569', border: '#e2e8f0', label: '' };
+}
+
+function renderLatestPositionCell(items, position) {
+    const st = getLatestColumnStyle(position);
+
+    if (!items || items.length === 0) {
+        return `
+            <td style="padding:8px 10px; text-align:center; background:#fff; border-left:1px solid #f1f5f9;">
+                <span style="color:#cbd5e1; font-weight:700;">—</span>
+            </td>`;
+    }
+
+    return `
+        <td style="padding:8px 10px; text-align:center; background:${st.bg}; border-left:1px solid ${st.border};">
+            ${items.map(i => `
+                <div style="display:flex; align-items:center; justify-content:center; gap:5px; ${items.length > 1 ? 'margin-bottom:5px;' : ''}" title="${i.type}">
+                    <input type="number" value="${i.amt}"
+                        aria-label="${i.type} เลข ${i.n}"
+                        onfocus="this.select()"
+                        style="width:78px; text-align:center; border:1px solid ${st.border}; background:#fff; color:${st.color}; font-weight:800; font-size:16px; border-radius:7px; padding:5px 4px; outline:none;"
+                        onchange="updateFinalAmt('${i.timestamp}', this.value)">
+                    <button onclick="deleteRowInFinal('${i.timestamp}')"
+                        title="ลบ ${i.type}"
+                        style="width:22px; height:22px; display:flex; align-items:center; justify-content:center; color:#94a3b8; border:none; background:transparent; cursor:pointer; font-size:16px; line-height:1; padding:0;">×</button>
+                </div>
+            `).join('')}
+        </td>`;
+}
 
 function renderFinal() {
     const container = document.getElementById('billContainer');
@@ -220,13 +277,26 @@ function renderFinal() {
         let billSum = bill.items.reduce((s, c) => s + c.amt, 0);
         totalAll += billSum;
 
+        // รวม "เลขเดียวกัน" ให้อยู่บรรทัดเดียว แล้วแยกยอดตาม บน / โต๊ด / ล่าง
+        const numberMap = new Map();
+        bill.items.forEach(item => {
+            if (!numberMap.has(item.n)) {
+                numberMap.set(item.n, { n: item.n, top: [], tod: [], down: [], other: [] });
+            }
+
+            const row = numberMap.get(item.n);
+            const position = getLatestPosition(item.type);
+            if (position) row[position].push(item);
+            else row.other.push(item);
+        });
+        const numberRows = Array.from(numberMap.values());
+
         html += `
-<div class="bill-card" style="margin-bottom:15px; border:1px solid #e2e8f0; border-radius:12px; background:#fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-    <div class="bill-header-index" style="padding:12px; background:#f8fafc; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; border-radius:12px 12px 0 0;">
+<div class="bill-card" style="margin-bottom:15px; border:1px solid #e2e8f0; border-radius:12px; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.05); overflow:hidden;">
+    <div class="bill-header-index" style="padding:12px; background:#f8fafc; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee;">
         <div style="display:flex; align-items:center; gap:8px; flex:1;">
             <span>👤</span>
-            <!-- แก้ไขตรงนี้: เปลี่ยนจาก b tag เป็น input สำหรับแก้ไขชื่อ -->
-            <input type="text" value="${bill.session}" 
+            <input type="text" value="${bill.session}"
                 style="border:1px solid transparent; background:transparent; font-weight:bold; font-size:14px; padding:2px 5px; width:150px; border-radius:4px; outline:none;"
                 onfocus="this.style.border='1px solid #cbd5e1'; this.style.background='#fff';"
                 onblur="this.style.border='1px solid transparent'; this.style.background='transparent';"
@@ -239,37 +309,44 @@ function renderFinal() {
             <button class="btn-del" style="background:var(--red); padding:5px 10px;" onclick="deleteBill('${id}')">ลบทั้งบิล</button>
         </div>
     </div>
-            
-            <div id="body-${id}" style="display: none; padding:0;">
-                <table style="width:100%; border-collapse: collapse; font-size:14px;">
-                    <thead style="background:#f1f5f9;">
-                        <tr style="text-align:left; color:#64748b; font-size:12px;">
-                            <th style="padding:8px 12px;">ประเภท</th>
-                            <th style="padding:8px 12px;">เลข</th>
-                            <th style="padding:8px 12px; text-align:right;">ราคา (แก้ไขได้)</th>
-                            <th style="padding:8px 12px; text-align:center;">ลบ</th>
+
+    <div id="body-${id}" style="display:none; padding:0; overflow-x:auto;">
+        <table style="width:100%; min-width:520px; border-collapse:collapse; font-size:14px; table-layout:fixed;">
+            <thead>
+                <tr style="font-size:12px;">
+                    <th style="width:24%; padding:9px 10px; text-align:center; background:#f8fafc; color:#334155; border-bottom:1px solid #e2e8f0;">เลข</th>
+                    <th style="width:25%; padding:9px 10px; text-align:center; background:${getLatestColumnStyle('top').bg}; color:${getLatestColumnStyle('top').color}; border-bottom:1px solid ${getLatestColumnStyle('top').border};">● บน</th>
+                    <th style="width:25%; padding:9px 10px; text-align:center; background:${getLatestColumnStyle('tod').bg}; color:${getLatestColumnStyle('tod').color}; border-bottom:1px solid ${getLatestColumnStyle('tod').border};">● โต๊ด</th>
+                    <th style="width:26%; padding:9px 10px; text-align:center; background:${getLatestColumnStyle('down').bg}; color:${getLatestColumnStyle('down').color}; border-bottom:1px solid ${getLatestColumnStyle('down').border};">● ล่าง</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${numberRows.map(row => `
+                    <tr style="border-bottom:1px solid #e2e8f0;">
+                        <td style="padding:9px 10px; text-align:center; background:#fff;">
+                            <b style="font-size:20px; color:#0f172a; letter-spacing:1px;">${row.n}</b>
+                        </td>
+                        ${renderLatestPositionCell(row.top, 'top')}
+                        ${renderLatestPositionCell(row.tod, 'tod')}
+                        ${renderLatestPositionCell(row.down, 'down')}
+                    </tr>
+                    ${row.other.map(i => `
+                        <tr style="border-bottom:1px solid #e2e8f0; background:#f8fafc;">
+                            <td style="padding:7px 10px; text-align:center;"><b>${i.n}</b></td>
+                            <td colspan="3" style="padding:7px 10px; color:#475569;">
+                                ${i.type}: <b>${i.amt.toLocaleString()}</b>
+                                <button onclick="deleteRowInFinal('${i.timestamp}')" style="margin-left:8px; color:var(--red); border:none; background:none; cursor:pointer;">ลบ</button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        ${bill.items.map(i => `
-                            <tr style="border-bottom:1px solid #f1f5f9;">
-                                <td style="padding:10px 12px; color:#475569;">${i.type}</td>
-                                <td style="padding:10px 12px;"><b>${i.n}</b></td>
-                                <td style="padding:10px 12px; text-align:right;">
-                                    <input type="number" value="${i.amt}" 
-                                        style="width:80px; text-align:right; border:1px solid #cbd5e1; border-radius:4px; padding:4px;"
-                                        onchange="updateFinalAmt('${i.timestamp}', this.value)">
-                                </td>
-                                <td style="padding:10px 12px; text-align:center;">
-                                    <button onclick="deleteRowInFinal('${i.timestamp}')" 
-                                        style="color:var(--red); border:none; background:none; cursor:pointer; font-size:18px; line-height:1;">✕</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        </div>`;
+                    `).join('')}
+                `).join('')}
+            </tbody>
+        </table>
+        <div style="padding:7px 12px; background:#f8fafc; color:#94a3b8; font-size:10px; text-align:right;">
+            แตะ/คลิกราคาเพื่อพิมพ์ทับได้ทันที • × = ลบเฉพาะประเภทนั้น
+        </div>
+    </div>
+</div>`;
     });
 
     container.innerHTML = html;
@@ -579,7 +656,7 @@ function saveSettings() {
     alert('บันทึกเรียบร้อย');
     renderSettings();
 }
-s
+
 function clearLimits() {
     if(confirm('ยืนยันล้างเพดานทั้งหมดให้เป็น "ไม่จำกัด" ใช่หรือไม่?')) {
         // 1. ล้างตัวแปรในโปรแกรม
@@ -613,28 +690,76 @@ function initKeypadLogic() {
     
     if (!numInp) return;
 
-    // Logic: ปิดช่องตามจำนวนเลข (เลข 3 หลัก ปิดล่าง / เลข 2 หลัก ปิดโต๊ด)
+    // จำราคาล่าสุดแยกแต่ละช่อง แม้ช่องนั้นจะถูกปิดชั่วคราว
+    // เช่น คีย์ 2 ตัวจะปิด "โต๊ด" แต่เมื่อกลับมาคีย์ 3 ตัว ราคาของโต๊ดจะกลับมาเหมือนเดิม
+    const priceMemory = {
+        top: topInp.value || "",
+        tod: todInp.value || "",
+        down: downInp.value || ""
+    };
+
+    const rememberPrice = (key, inp) => {
+        if (inp && !inp.disabled && inp.value !== "") {
+            priceMemory[key] = inp.value;
+        }
+    };
+
+    [
+        ["top", topInp],
+        ["tod", todInp],
+        ["down", downInp]
+    ].forEach(([key, inp]) => {
+        if (!inp) return;
+        inp.addEventListener('input', () => {
+            if (!inp.disabled) priceMemory[key] = inp.value;
+        });
+    });
+
+    // Logic: ปิดช่องตามจำนวนเลข แต่เก็บราคาล่าสุดไว้ใน priceMemory
     numInp.addEventListener('input', () => {
         const val = numInp.value.replace('*','');
+
+        // เก็บค่าปัจจุบันก่อนเปลี่ยนสถานะช่อง
+        rememberPrice("top", topInp);
+        rememberPrice("tod", todInp);
+        rememberPrice("down", downInp);
+
         if (val.length === 3) {
+            // 3 ตัว: ใช้ บน + โต๊ด / ไม่ใช้ล่าง
             downInp.disabled = true;
-            downInp.style.backgroundColor = "#e2e8f0"; // สีทึบ
+            downInp.style.backgroundColor = "#e2e8f0";
             downInp.value = "";
+
             todInp.disabled = false;
             todInp.style.backgroundColor = "";
+            todInp.value = priceMemory.tod;
         } else if (val.length === 1 || val.length === 2) {
+            // 1-2 ตัว: ใช้ บน + ล่าง / ไม่ใช้โต๊ด
             todInp.disabled = true;
             todInp.style.backgroundColor = "#e2e8f0";
             todInp.value = "";
+
             downInp.disabled = false;
             downInp.style.backgroundColor = "";
+            downInp.value = priceMemory.down;
         } else {
-            // ถ้าว่างหรืออื่นๆ ให้เปิดหมด
+            // ถ้าว่างหรืออื่นๆ ให้เปิดหมด และคืนราคาที่จำไว้
             todInp.disabled = false;
             downInp.disabled = false;
             todInp.style.backgroundColor = "";
             downInp.style.backgroundColor = "";
+            todInp.value = priceMemory.tod;
+            downInp.value = priceMemory.down;
         }
+    });
+
+    // ราคา: เมื่อกลับมาที่ช่องราคา ให้เลือกค่าทั้งหมดอัตโนมัติ
+    // เพื่อให้พิมพ์ราคาใหม่ทับได้ทันที โดยไม่ต้องกด Backspace
+    [topInp, todInp, downInp].forEach((priceInp) => {
+        if (!priceInp) return;
+        priceInp.addEventListener('focus', () => {
+            priceInp.select();
+        });
     });
 
     // แก้ปัญหา Enter แล้วนิ่ง: ใช้ Array เช็คสถานะช่องที่ "เปิดอยู่" เท่านั้น
@@ -678,8 +803,8 @@ function addToDraft() {
     }
     
     const t = parseFloat(topInp.value) || 0;
-    const td = parseFloat(todInp.value) || 0;
-    const d = parseFloat(downInp.value) || 0;
+    const td = todInp.disabled ? 0 : (parseFloat(todInp.value) || 0);
+    const d = downInp.disabled ? 0 : (parseFloat(downInp.value) || 0);
 
     // ตรวจสอบว่าใส่ราคาหรือยัง
     if (t === 0 && td === 0 && d === 0) {
